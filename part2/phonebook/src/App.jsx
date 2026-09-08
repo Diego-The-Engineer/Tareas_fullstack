@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 const Persona = ({text,value, onChange}) => {
   return (
@@ -29,13 +29,15 @@ const Filter = ({search, onChange}) => {
   )
 }
 
-const Person = ({name, number}) => {
+const Person = ({name, number, id, delPerson}) => {
   return (
-    <p>{name} {number}</p>
+    <>
+    <p>{name} {number} <button onClick={() => delPerson(id)}> Delete </button></p>
+    </>
   )
 }
 
-const Persons = ({showPerson}) => {
+const Persons = ({showPerson, delPerson}) => {
   return (
     <>
         {showPerson.map(person => 
@@ -43,6 +45,8 @@ const Persons = ({showPerson}) => {
             key={person.id}
             name={person.name}
             number={person.number}
+            id={person.id}
+            delPerson={delPerson}
           />
         )}
       </>
@@ -51,15 +55,12 @@ const Persons = ({showPerson}) => {
 
 const App = () => {
   useEffect(()=> {
-  axios
-  .get('http://localhost:3001/persons')
-  .then(response => {
-    setPersons(response.data)
-  })
+  personService
+    .getAll()
+    .then(response => {
+      setPersons(response.data)
+    })
 },[])
-
-
-
 
   const [persons, setPersons] = useState([]) 
 
@@ -82,27 +83,54 @@ const App = () => {
   }
 
 
-  const showPerson = search.toLowerCase() ? persons.filter(person => person.name.toLowerCase().includes(search.toLowerCase())) : persons  
+  const showPerson = search.toLowerCase() ? persons.filter(person => person.name?.toLowerCase().includes(search.toLowerCase())) : persons  
 
+  const modPerson = (existingPerson, id) => {
+    alert( existingPerson.name + ' already exists, wanna update number?')
+    const newObject = {...existingPerson, number: newNumber}
+     personService
+    .modify(existingPerson.id, newObject)
+    .then(response =>{
+      setPersons(persons.map(person => person.id === existingPerson.id ? response.data : person))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
 
   const addPerson= (event) => {
   event.preventDefault()
   if(newName === "" || newNumber ==="") return
-  if(persons.some(person => person.name === newName) && persons.some(person => person.number === newNumber)) {
-    alert (newName + ' is already added to phonebook')
-    return
-  }
-  const personObject = {
+  const existingPerson = persons.find(person => person.name === newName)
+  if(existingPerson){
+    modPerson(existingPerson, existingPerson.id)
+  }else{
+    const personObject = {
     name: newName,
     number: newNumber,
-    id: String(persons.length + 1),
+    id: String(persons.length + 1)
   }
-  setPersons(persons.concat(personObject))
-  setNewName('')
-  setNewNumber('')
-
+  personService
+    .create(personObject)
+    .then(response => {
+      setPersons(persons.concat(response.data))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
 
 }
+
+  const delPerson = (id) => {
+    const res = persons.findIndex(person => person.id === id)
+    const neim = persons[res].name
+    alert('Delete ' + neim + '?')
+    personService
+    .deletE(id)
+    .then(() => 
+      setPersons(persons.filter(person => person.id !== id))
+    )
+  }
+
   return (
     
     <>
@@ -122,7 +150,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons showPerson={showPerson}/>
+      <Persons showPerson={showPerson} delPerson={delPerson}/>
 
     </>
   )
