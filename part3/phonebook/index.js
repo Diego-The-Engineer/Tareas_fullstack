@@ -40,7 +40,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.update('/api/persons/:id', (request, response, next) => {
     const data = request.body
-    Person.findByIdAndUpdate(request.params.id,
+    Person.findByIdAndUpdate(request.params.id),
         {number: data.number},
         {new: true, runValidators: true}
     }).then(res => {
@@ -51,7 +51,7 @@ app.update('/api/persons/:id', (request, response, next) => {
         }
     })
     .catch(error => next(error))
-})
+
 
 
 app.delete('/api/persons/:id', (request, response, next) => {
