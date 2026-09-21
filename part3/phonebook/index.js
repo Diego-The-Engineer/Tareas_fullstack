@@ -38,6 +38,22 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+app.update('/api/persons/:id', (request, response, next) => {
+    const data = request.body
+    Person.findByIdAndUpdate(request.params.id,
+        {number: data.number},
+        {new: true, runValidators: true}
+    }).then(res => {
+        if(res){
+            response.json(res)
+        }else{
+            response.status(404).end()
+        }
+    })
+    .catch(error => next(error))
+})
+
+
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id)
     .then(res => {
@@ -72,6 +88,7 @@ app.get('/info', (request, response) => {
         response.send(`<p> Phonebook has info for ${count} people </p> <p> ${fecha} </p>`)
     })
 })
+
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
