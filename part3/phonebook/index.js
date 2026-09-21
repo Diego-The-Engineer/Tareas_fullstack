@@ -38,12 +38,15 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.update('/api/persons/:id', (request, response, next) => {
+app.put('/api/persons/:id', (request, response, next) => {
     const data = request.body
-    Person.findByIdAndUpdate(request.params.id),
-        {number: data.number},
-        {new: true, runValidators: true}
-    }).then(res => {
+
+    Person.findByIdAndUpdate(
+        request.params.id,
+        { number: data.number },
+        { new: true, runValidators: true }
+    )
+    .then(res => {
         if(res){
             response.json(res)
         }else{
@@ -51,7 +54,7 @@ app.update('/api/persons/:id', (request, response, next) => {
         }
     })
     .catch(error => next(error))
-}
+})
 
 
 
