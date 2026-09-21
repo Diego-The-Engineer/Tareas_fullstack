@@ -2,7 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import 'dotenv/config'
-const Person = require('./models/person')
+import Person from './models/person.js'
 const PORT = process.env.PORT
 const app = express()
 app.use(express.json())
