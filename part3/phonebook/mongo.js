@@ -60,5 +60,5 @@ person.save().then(res => {
 }
 
 
-module.exports = mongoose.model('Person', personSchema)
+export default mongoose.model('Person', personSchema)
 
