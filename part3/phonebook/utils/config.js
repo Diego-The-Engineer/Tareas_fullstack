@@ -4,8 +4,8 @@ const configuration = dotenv.config()
 
 const PORT = process.env.PORT || 3001
 
-const mongoUrl = process.env.MONGO_URI
+const url = process.env.MONGODB_URI
 
 export default {
-    PORT, mongoUrl
+    PORT, url
 }

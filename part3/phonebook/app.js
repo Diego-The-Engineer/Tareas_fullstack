@@ -14,7 +14,7 @@ const app = express()
 
 logger.info('Connecting to database')
 
-mongoose.connect(config.mongoUrl, { family: 4 })
+mongoose.connect(config.url, { family: 4 })
   .then(() => {
     logger.info('connected to MongoDB')
   })
