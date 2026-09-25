@@ -1,7 +1,3 @@
-import config from "./config.js";
-
-const configuration = config()
-
 const info = (...params) => {
   console.log(...params)
 }
